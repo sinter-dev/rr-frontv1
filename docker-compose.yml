@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build: .
+    container_name: rrapp_frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    networks:
+      - rrapp_network
+
+networks:
+  rrapp_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.20.0/24
+          gateway: 192.168.20.1
