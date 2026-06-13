@@ -1,0 +1,31 @@
+stages:
+  - deploy
+
+deploy_frontend:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client bash
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+  script:
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST "
+        cd $DEPLOY_PATH &&
+        echo 'Pulling latest code...' &&
+        git pull origin main &&
+        echo 'Rebuilding frontend...' &&
+        docker compose up -d --build --no-deps frontend &&
+        echo 'Cleaning up old images...' &&
+        docker image prune -f &&
+        echo 'Deployment complete!'
+      "
+
+  only:
+    - main
