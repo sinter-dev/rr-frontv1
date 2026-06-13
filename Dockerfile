@@ -21,9 +21,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy built assets from builder
-COPY --from=builder /app/public ./public
+# COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# Copy public folder only if it exists
+RUN mkdir -p ./public
+COPY --from=builder /app/public* ./public/
 
 EXPOSE 3000
 
