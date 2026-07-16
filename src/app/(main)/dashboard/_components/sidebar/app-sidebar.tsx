@@ -1,5 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
+
+import Image from "next/image";
 import Link from "next/link";
 
 import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
@@ -15,50 +18,52 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { APP_CONFIG } from "@/config/app-config";
-import { rootUser } from "@/data/users";
-import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
+import { useAuthUser } from "@/hooks/use-auth-user";
+import { filterSidebarItems, sidebarItems } from "@/navigation/sidebar/sidebar-items";
+// import { rootUser } from "@/data/users";
+// import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { SidebarSupportCard } from "./sidebar-support-card";
+// import { SidebarSupportCard } from "./sidebar-support-card";
 
-const _data = {
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: CircleHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: Database,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardList,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: File,
-    },
-  ],
-};
+// const _data = {
+//   navSecondary: [
+//     {
+//       title: "Settings",
+//       url: "#",
+//       icon: Settings,
+//     },
+//     {
+//       title: "Get Help",
+//       url: "#",
+//       icon: CircleHelp,
+//     },
+//     {
+//       title: "Search",
+//       url: "#",
+//       icon: Search,
+//     },
+//   ],
+//   documents: [
+//     {
+//       name: "Data Library",
+//       url: "#",
+//       icon: Database,
+//     },
+//     {
+//       name: "Reports",
+//       url: "#",
+//       icon: ClipboardList,
+//     },
+//     {
+//       name: "Word Assistant",
+//       url: "#",
+//       icon: File,
+//     },
+//   ],
+// };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { sidebarVariant, sidebarCollapsible, isSynced } = usePreferencesStore(
@@ -72,6 +77,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const variant = isSynced ? sidebarVariant : props.variant;
   const collapsible = isSynced ? sidebarCollapsible : props.collapsible;
 
+  const user = useAuthUser();
+  const visibleItems = useMemo(() => filterSidebarItems(sidebarItems, user), [user]);
+
   return (
     <Sidebar {...props} variant={variant} collapsible={collapsible}>
       <SidebarHeader>
@@ -79,7 +87,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link prefetch={false} href="/dashboard/default">
-                <Command />
+                {/* <Command /> */}
+                <Image src="/logo.png" alt={`${APP_CONFIG.name} logo`} width={24} height={24} className="rounded" />
                 <span className="font-semibold text-base">{APP_CONFIG.name}</span>
               </Link>
             </SidebarMenuButton>
@@ -92,8 +101,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarSupportCard />
-        <NavUser user={rootUser} />
+        {/* <SidebarSupportCard /> */}
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

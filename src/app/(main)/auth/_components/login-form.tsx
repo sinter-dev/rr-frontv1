@@ -1,6 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -9,48 +14,65 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ApiError, loginRequest } from "@/lib/auth/auth-api";
+import { saveSession } from "@/lib/auth/auth-storage";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  remember: z.boolean().optional(),
+  phone_number: z.string().regex(/^256\d{9}$/, {
+    message: "Use format 256XXXXXXXXX — country code 256 followed by 9 digits, no spaces.",
+  }),
+  password: z.string().min(1, { message: "Password is required." }),
 });
 
 export function LoginForm() {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      phone_number: "",
       password: "",
-      remember: false,
+      // remember: false,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  };
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    setSubmitting(true);
+    try {
+      const response = await loginRequest(data.phone_number, data.password);
+      saveSession(response);
+
+      const displayName = response.user.first_name || response.user.phone_number;
+      toast.success(`Welcome back, ${displayName}!`);
+
+      // Later milestone: when must_change_password is true, route to a
+      // change-password screen instead. For now the super admin (false)
+      // goes straight to the dashboard.
+      router.replace("/dashboard/default");
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : "Something went wrong. Please try again.";
+      toast.error(message);
+      setSubmitting(false);
+    }
+  }
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <FieldGroup className="gap-4">
         <Controller
           control={form.control}
-          name="email"
+          name="phone_number"
           render={({ field, fieldState }) => (
             <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="login-email">Email Address</FieldLabel>
+              <FieldLabel htmlFor="login-phone">Phone Number</FieldLabel>
               <Input
                 {...field}
-                id="login-email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
+                id="login-phone"
+                type="tel"
+                inputMode="numeric"
+                placeholder="256789123456"
+                autoComplete="tel"
                 aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -75,30 +97,16 @@ export function LoginForm() {
             </Field>
           )}
         />
-        <Controller
-          control={form.control}
-          name="remember"
-          render={({ field, fieldState }) => (
-            <Field orientation="horizontal" data-invalid={fieldState.invalid}>
-              <Checkbox
-                id="login-remember"
-                name={field.name}
-                checked={field.value}
-                onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                aria-invalid={fieldState.invalid}
-              />
-              <FieldContent>
-                <FieldLabel htmlFor="login-remember" className="font-normal">
-                  Remember me for 30 days
-                </FieldLabel>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </FieldContent>
-            </Field>
-          )}
-        />
       </FieldGroup>
-      <Button className="w-full" type="submit">
-        Login
+      <Button className="w-full" type="submit" disabled={submitting}>
+        {submitting ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Logging in...
+          </>
+        ) : (
+          "Login"
+        )}
       </Button>
     </form>
   );

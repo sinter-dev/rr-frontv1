@@ -1,42 +1,54 @@
-import {
-  Banknote,
-  Calendar,
-  ChartBar,
-  Fingerprint,
-  Forklift,
-  Gauge,
-  GraduationCap,
-  Kanban,
-  LayoutDashboard,
-  ListTodo,
-  Lock,
-  type LucideIcon,
-  Mail,
-  MessageSquare,
-  ReceiptText,
-  ShoppingBag,
-  SquareArrowUpRight,
-  Users,
-} from "lucide-react";
+// src/navigation/sidebar/sidebar-items.ts
+// REPLACES the template's demo navigation (dashboards, mail, chat, auth
+// screens...) with this project's navigation, filtered by what the
+// logged-in user is allowed to do.
+//
+// access rules:
+//   "all"          -> every authenticated user
+//   "super_admin"  -> role.code === "super_admin"
+//   "leader"       -> is_group_leader === true
+//
+// Items point to /dashboard/coming-soon until their screens are built —
+// we swap URLs as we implement each milestone.
+
+import { LayoutDashboard, type LucideIcon, ShieldCheck, UserPlus, Users, Wallet } from "lucide-react";
+
+import type { AuthUser } from "@/lib/auth/auth-api";
+
+export type NavBadge = "new" | "soon";
+export type NavAccess = "all" | "super_admin" | "leader";
 
 export interface NavSubItem {
+  id: string;
   title: string;
   url: string;
   icon?: LucideIcon;
-  comingSoon?: boolean;
+  badge?: NavBadge;
+  disabled?: boolean;
   newTab?: boolean;
-  isNew?: boolean;
+  access?: NavAccess;
 }
 
-export interface NavMainItem {
+interface NavItemBase {
+  id: string;
   title: string;
-  url: string;
   icon?: LucideIcon;
-  subItems?: NavSubItem[];
-  comingSoon?: boolean;
+  badge?: NavBadge;
+  disabled?: boolean;
   newTab?: boolean;
-  isNew?: boolean;
+  access?: NavAccess;
 }
+
+export interface NavMainLinkItem extends NavItemBase {
+  url: string;
+  subItems?: never;
+}
+
+export interface NavMainParentItem extends NavItemBase {
+  subItems: NavSubItem[];
+}
+
+export type NavMainItem = NavMainLinkItem | NavMainParentItem;
 
 export interface NavGroup {
   id: number;
@@ -47,132 +59,82 @@ export interface NavGroup {
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
-    label: "Dashboards",
+    label: "Overview",
     items: [
       {
-        title: "Default",
+        id: "dashboard",
+        title: "Dashboard",
         url: "/dashboard/default",
         icon: LayoutDashboard,
+        access: "all",
       },
       {
-        title: "CRM",
-        url: "/dashboard/crm",
-        icon: ChartBar,
-      },
-      {
-        title: "Finance",
-        url: "/dashboard/finance",
-        icon: Banknote,
-      },
-      {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: Gauge,
-      },
-      {
-        title: "Productivity",
-        url: "/dashboard/productivity",
-        icon: ListTodo,
-      },
-      {
-        title: "E-commerce",
-        url: "/dashboard/ecommerce",
-        icon: ShoppingBag,
-      },
-      {
-        title: "Academy",
-        url: "/dashboard/academy",
-        icon: GraduationCap,
-        isNew: true,
-      },
-      {
-        title: "Logistics",
-        url: "/dashboard/logistics",
-        icon: Forklift,
+        id: "wallet",
+        title: "My Wallet",
+        url: "/dashboard/coming-soon",
+        icon: Wallet,
+        badge: "soon",
+        access: "all",
       },
     ],
   },
   {
     id: 2,
-    label: "Pages",
+    label: "Administration",
     items: [
       {
-        title: "Email",
-        url: "/dashboard/mail",
-        icon: Mail,
-      },
-      {
-        title: "Chat",
-        url: "/dashboard/chat",
-        icon: MessageSquare,
-      },
-      {
-        title: "Calendar",
+        id: "group-leaders",
+        title: "Group Leaders",
         url: "/dashboard/coming-soon",
-        icon: Calendar,
-        comingSoon: true,
+        icon: UserPlus,
+        badge: "soon",
+        access: "super_admin",
       },
       {
-        title: "Kanban",
-        url: "/dashboard/coming-soon",
-        icon: Kanban,
-        comingSoon: true,
-      },
-      {
-        title: "Invoice",
-        url: "/dashboard/coming-soon",
-        icon: ReceiptText,
-        comingSoon: true,
-      },
-      {
-        title: "Users",
-        url: "/dashboard/users",
-        icon: Users,
-      },
-      {
+        id: "roles",
         title: "Roles",
-        url: "/dashboard/roles",
-        icon: Lock,
-      },
-      {
-        title: "Authentication",
-        url: "/auth",
-        icon: Fingerprint,
-        subItems: [
-          { title: "Login v1", url: "/auth/v1/login", newTab: true },
-          { title: "Login v2", url: "/auth/v2/login", newTab: true },
-          { title: "Register v1", url: "/auth/v1/register", newTab: true },
-          { title: "Register v2", url: "/auth/v2/register", newTab: true },
-        ],
+        url: "/dashboard/coming-soon",
+        icon: ShieldCheck,
+        badge: "soon",
+        access: "super_admin",
       },
     ],
   },
   {
     id: 3,
-    label: "Legacy",
+    label: "My Group",
     items: [
       {
-        title: "Dashboards",
-        url: "/dashboard/default-v1",
-        subItems: [
-          { title: "Default V1", url: "/dashboard/default-v1" },
-          { title: "CRM V1", url: "/dashboard/crm-v1" },
-          { title: "Finance V1", url: "/dashboard/finance-v1" },
-          { title: "Analytics V1", url: "/dashboard/analytics-v1" },
-        ],
-      },
-    ],
-  },
-  {
-    id: 4,
-    label: "Misc",
-    items: [
-      {
-        title: "Others",
+        id: "members",
+        title: "Members",
         url: "/dashboard/coming-soon",
-        icon: SquareArrowUpRight,
-        comingSoon: true,
+        icon: Users,
+        badge: "soon",
+        access: "leader",
       },
     ],
   },
 ];
+
+// ---- Filtering ----
+
+function canSee(access: NavAccess | undefined, user: AuthUser | null): boolean {
+  const rule = access ?? "all";
+  if (rule === "all") return true;
+  if (!user) return false; // restricted items hidden until the user is known
+  if (rule === "super_admin") return user.role?.code === "super_admin";
+  return user.is_group_leader; // "leader"
+}
+
+export function filterSidebarItems(groups: NavGroup[], user: AuthUser | null): NavGroup[] {
+  return groups
+    .map((group) => ({
+      ...group,
+      items: group.items
+        .filter((item) => canSee(item.access, user))
+        .map((item) =>
+          item.subItems ? { ...item, subItems: item.subItems.filter((sub) => canSee(sub.access, user)) } : item,
+        ),
+    }))
+    .filter((group) => group.items.length > 0);
+}
