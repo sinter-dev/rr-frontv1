@@ -11,7 +11,17 @@
 // Items point to /dashboard/coming-soon until their screens are built —
 // we swap URLs as we implement each milestone.
 
-import { Globe, LayoutDashboard, type LucideIcon, ShieldCheck, UserPlus, Users, Wallet } from "lucide-react";
+import {
+  Globe,
+  LayoutDashboard,
+  type LucideIcon,
+  MapIcon,
+  MapPin,
+  ShieldCheck,
+  UserPlus,
+  Users,
+  Wallet,
+} from "lucide-react";
 
 import type { AuthUser } from "@/lib/auth/auth-api";
 
@@ -125,6 +135,20 @@ export const sidebarItems: NavGroup[] = [
         title: "Countries",
         url: "/dashboard/geography/countries",
         icon: Globe,
+        access: "super_admin",
+      },
+      {
+        id: "parks",
+        title: "Parks",
+        url: "/dashboard/geography/parks",
+        icon: MapIcon,
+        access: "super_admin",
+      },
+      {
+        id: "communities",
+        title: "Communities",
+        url: "/dashboard/geography/communities",
+        icon: MapPin,
         access: "super_admin",
       },
     ],
