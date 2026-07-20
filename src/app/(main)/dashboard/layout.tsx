@@ -16,6 +16,7 @@ import { AccountSwitcher } from "./_components/sidebar/account-switcher";
 import { LayoutControls } from "./_components/sidebar/layout-controls";
 // import { SearchDialog } from "./_components/sidebar/search-dialog";
 import { ThemeSwitcher } from "./_components/sidebar/theme-switcher";
+import { PasswordChangeGuard } from "./change-password/_components/password-change-guard";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
   const cookieStore = await cookies();
@@ -34,6 +35,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         } as React.CSSProperties
       }
     >
+      <PasswordChangeGuard />
       <AppSidebar variant={variant} collapsible={collapsible} />
       <SidebarInset
         className={cn(

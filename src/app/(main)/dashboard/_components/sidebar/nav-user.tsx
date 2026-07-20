@@ -1,6 +1,8 @@
 "use client";
 
-import { CircleUser, CreditCard, EllipsisVertical, LogOut, MessageSquareDot } from "lucide-react";
+import Link from "next/link";
+
+import { CircleUser, CreditCard, EllipsisVertical, KeyRound, LogOut, MessageSquareDot } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -68,6 +70,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/change-password">
+                  <KeyRound />
+                  Change password
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem disabled>
                 <CircleUser />
                 Account (soon)

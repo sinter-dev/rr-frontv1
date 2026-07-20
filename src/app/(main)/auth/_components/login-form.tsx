@@ -46,10 +46,11 @@ export function LoginForm() {
       const displayName = response.user.first_name || response.user.phone_number;
       toast.success(`Welcome back, ${displayName}!`);
 
-      // Later milestone: when must_change_password is true, route to a
-      // change-password screen instead. For now the super admin (false)
-      // goes straight to the dashboard.
-      router.replace("/dashboard/default");
+      if (response.user.must_change_password) {
+        router.replace("/dashboard/change-password");
+      } else {
+        router.replace("/dashboard/default");
+      }
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Something went wrong. Please try again.";
       toast.error(message);

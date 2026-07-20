@@ -35,6 +35,17 @@ export function getStoredUser(): AuthUser | null {
   }
 }
 
+/**
+ * Merge partial changes into the stored profile — e.g. after the user
+ * changes their password we flip must_change_password to false locally,
+ * so the app stops redirecting them to the change-password screen.
+ */
+export function updateStoredUser(changes: Partial<AuthUser>) {
+  const current = getStoredUser();
+  if (!current) return;
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({ ...current, ...changes }));
+}
+
 export function clearSession() {
   deleteClientCookie(ACCESS_TOKEN_COOKIE);
   deleteClientCookie(REFRESH_TOKEN_COOKIE);
