@@ -1,18 +1,22 @@
 // src/lib/auth/auth-api.ts
-// Talks to the Django backend. The base URL comes from .env.local:
+// Talks to the Django backend. The base URL comes from the env file:
 //   NEXT_PUBLIC_API_URL=http://localhost:8000   (dev)
 //   NEXT_PUBLIC_API_URL=https://mydomain.com    (prod)
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-// ---- Types mirroring the Django serializers ----
+// ---- Types mirroring the Django UserSerializer ----
+// The backend returns a user's role as a compact {code, name} object
+// (derived from their group), NOT the full Role record.
 
-export interface Role {
-  id: number;
+export interface UserRole {
   code: string;
   name: string;
-  description: string;
-  is_active: boolean;
+}
+
+export interface UserCommunity {
+  id: number;
+  name: string;
 }
 
 export interface AuthUser {
@@ -21,9 +25,14 @@ export interface AuthUser {
   email: string | null;
   first_name: string;
   last_name: string;
-  role: Role | null;
+  group: number | null;
+  group_name: string | null;
+  role: UserRole | null;
+  community: UserCommunity | null;
   is_group_leader: boolean;
   must_change_password: boolean;
+  registered_by: number | null;
+  created_at: string;
 }
 
 export interface LoginResponse {
