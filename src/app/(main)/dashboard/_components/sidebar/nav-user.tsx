@@ -76,9 +76,11 @@ export function NavUser() {
                   Change password
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <CircleUser />
-                Account (soon)
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/profile">
+                  <CircleUser />
+                  My profile
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

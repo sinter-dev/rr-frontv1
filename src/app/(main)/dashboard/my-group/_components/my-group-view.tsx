@@ -1,18 +1,19 @@
 "use client";
 
 // Leader's "My Group" screen. Lists the leader's own group members,
-// registers new ones, and can promote a member to leader. Because of
-// Option A, promoting someone else DEMOTES the current leader — so we
-// warn clearly and, after promotion, refresh the profile and send them
-// to the dashboard (they lose access to this leader-only screen).
+// registers new ones, edits member details, and can promote a member to
+// leader. Because of Option A, promoting someone DEMOTES the current
+// leader — so we warn clearly and, after promotion, send them to the
+// dashboard (they lose access to this leader-only screen).
 
 import { useCallback, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Crown, Loader2, Plus } from "lucide-react";
+import { Crown, Loader2, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { EditUserDialog } from "@/app/(main)/dashboard/_components/shared/edit-user-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +39,7 @@ export function MyGroupView() {
   const [members, setMembers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<AppUser | null>(null);
   const [toPromote, setToPromote] = useState<AppUser | null>(null);
   const [working, setWorking] = useState(false);
 
@@ -72,8 +74,8 @@ export function MyGroupView() {
       await setGroupLeader(groupId, toPromote.id);
       toast.success(`${toPromote.first_name || toPromote.phone_number} is now the group leader.`);
       // The current user just demoted themselves — their session profile is
-      // stale. Simplest correct behavior: send them to the dashboard, where
-      // the sidebar will reflect their new (member) permissions on next load.
+      // stale. Send them to the dashboard, where the sidebar will reflect
+      // their new (member) permissions.
       router.replace("/dashboard/default");
     } catch (error) {
       toast.error(error instanceof ApiError ? error.message : "Failed to change leader.");
@@ -86,7 +88,9 @@ export function MyGroupView() {
     <Card>
       <CardHeader>
         <CardTitle>My Group — {groupName}</CardTitle>
-        <CardDescription>Members of your group. You can add members or hand over leadership.</CardDescription>
+        <CardDescription>
+          Members of your group. You can add members, correct their details, or hand over leadership.
+        </CardDescription>
         <CardAction>
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="size-4" />
@@ -129,10 +133,15 @@ export function MyGroupView() {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => setToPromote(m)}>
-                        <Crown className="size-4" />
-                        Make leader
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => setEditing(m)} title="Edit details">
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setToPromote(m)}>
+                          <Crown className="size-4" />
+                          Make leader
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -148,6 +157,14 @@ export function MyGroupView() {
         onSubmit={handleRegister}
         onSaved={load}
         contextLabel={groupName}
+      />
+
+      <EditUserDialog
+        open={!!editing}
+        onOpenChange={(o) => !o && setEditing(null)}
+        user={editing}
+        mode="leader"
+        onSaved={load}
       />
 
       <AlertDialog open={!!toPromote} onOpenChange={(o) => !o && setToPromote(null)}>

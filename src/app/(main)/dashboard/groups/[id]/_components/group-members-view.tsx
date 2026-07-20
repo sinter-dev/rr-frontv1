@@ -2,15 +2,17 @@
 
 // Super admin's group members screen (detail of one group). Reached from
 // the Groups list. Shows the roster, lets the admin add members directly
-// (even if leaderless) and promote any member to leader.
+// (even if leaderless), edit any member's details (including the phone
+// number — admin only), and promote any member to leader.
 
 import { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
 
-import { ArrowLeft, Crown, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Crown, Loader2, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { EditUserDialog } from "@/app/(main)/dashboard/_components/shared/edit-user-dialog";
 import { RegisterMemberDialog } from "@/app/(main)/dashboard/my-group/_components/register-member-dialog";
 import {
   AlertDialog,
@@ -45,6 +47,7 @@ export function GroupMembersView({ groupId }: Props) {
   const [members, setMembers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<AppUser | null>(null);
   const [toPromote, setToPromote] = useState<AppUser | null>(null);
   const [working, setWorking] = useState(false);
 
@@ -150,12 +153,17 @@ export function GroupMembersView({ groupId }: Props) {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        {!isLeader && (
-                          <Button variant="ghost" size="sm" onClick={() => setToPromote(m)}>
-                            <Crown className="size-4" />
-                            Make leader
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => setEditing(m)} title="Edit details">
+                            <Pencil className="size-4" />
                           </Button>
-                        )}
+                          {!isLeader && (
+                            <Button variant="ghost" size="sm" onClick={() => setToPromote(m)}>
+                              <Crown className="size-4" />
+                              Make leader
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -172,6 +180,14 @@ export function GroupMembersView({ groupId }: Props) {
         onSubmit={handleRegister}
         onSaved={load}
         contextLabel={group?.name}
+      />
+
+      <EditUserDialog
+        open={!!editing}
+        onOpenChange={(o) => !o && setEditing(null)}
+        user={editing}
+        mode="admin"
+        onSaved={load}
       />
 
       <AlertDialog open={!!toPromote} onOpenChange={(o) => !o && setToPromote(null)}>
