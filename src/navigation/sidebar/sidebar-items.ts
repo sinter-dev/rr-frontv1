@@ -17,6 +17,7 @@ import {
   type LucideIcon,
   MapIcon,
   MapPin,
+  Settings,
   ShieldCheck,
   UserPlus,
   Users,
@@ -81,15 +82,34 @@ export const sidebarItems: NavGroup[] = [
       {
         id: "wallet",
         title: "My Wallet",
-        url: "/dashboard/coming-soon",
+        url: "/dashboard/my-wallet",
         icon: Wallet,
-        badge: "soon",
         access: "all",
       },
     ],
   },
   {
     id: 2,
+    label: "Money",
+    items: [
+      {
+        id: "wallets",
+        title: "All Wallets",
+        url: "/dashboard/wallets",
+        icon: Wallet,
+        access: "super_admin",
+      },
+      {
+        id: "wallet-settings",
+        title: "Wallet Settings",
+        url: "/dashboard/wallets/settings",
+        icon: Settings,
+        access: "super_admin",
+      },
+    ],
+  },
+  {
+    id: 3,
     label: "Administration",
     items: [
       {
@@ -109,7 +129,7 @@ export const sidebarItems: NavGroup[] = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     label: "My Group",
     items: [
       {
@@ -124,7 +144,7 @@ export const sidebarItems: NavGroup[] = [
   // /// geography start
 
   {
-    id: 4,
+    id: 5,
     label: "Geography",
     items: [
       {
