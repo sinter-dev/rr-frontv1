@@ -4,15 +4,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { ArrowDownLeft, ArrowUpRight, Loader2, Wallet as WalletIcon } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Banknote, Loader2, Wallet as WalletIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ApiError } from "@/lib/api/client";
 import { formatUGX, getMyLedger, getMyWallet, type LedgerEntry, type Wallet } from "@/lib/api/wallets";
 import { cn } from "@/lib/utils";
+
+import { WithdrawDialog } from "./withdraw-dialog";
 
 function EntryRow({ entry }: { entry: LedgerEntry }) {
   const isCredit = entry.direction === "CREDIT";
@@ -58,6 +61,7 @@ export function MyWalletView() {
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [entries, setEntries] = useState<LedgerEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,16 +100,21 @@ export function MyWalletView() {
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="sm:col-span-1">
-          <CardContent className="pt-6">
+          <CardContent className="flex h-full flex-col pt-6">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <WalletIcon className="size-4" />
               Available balance
             </div>
             <p className="mt-2 font-semibold text-3xl tabular-nums">{wallet ? formatUGX(wallet.balance) : "—"}</p>
-            {wallet?.is_frozen && (
-              <Badge variant="outline" className="mt-2">
+            {wallet?.is_frozen ? (
+              <Badge variant="outline" className="mt-2 w-fit">
                 Frozen
               </Badge>
+            ) : (
+              <Button size="sm" className="mt-4 w-fit" onClick={() => setWithdrawOpen(true)} disabled={!wallet}>
+                <Banknote className="size-4" />
+                Withdraw
+              </Button>
             )}
           </CardContent>
         </Card>
@@ -154,6 +163,8 @@ export function MyWalletView() {
           )}
         </CardContent>
       </Card>
+
+      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} onDone={load} />
     </div>
   );
 }

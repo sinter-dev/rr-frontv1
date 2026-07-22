@@ -166,7 +166,7 @@ export function PayWorkerPanel() {
         <div className="relative">
           <Label htmlFor="worker">Who are you paying?</Label>
           <div className="relative mt-1.5">
-            <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="worker"
               value={query}
@@ -180,7 +180,7 @@ export function PayWorkerPanel() {
               autoComplete="off"
             />
             {searching && (
-              <Loader2 className="-translate-y-1/2 absolute top-1/2 right-3 size-4 animate-spin text-muted-foreground" />
+              <Loader2 className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             )}
           </div>
 

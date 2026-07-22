@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 
-import { CircleUser, CreditCard, EllipsisVertical, KeyRound, LogOut, MessageSquareDot } from "lucide-react";
+import { CircleUser, EllipsisVertical, KeyRound, LogOut } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { displayName, displayRole, useAuthUser, useLogout } from "@/hooks/use-auth-user";
-import { getInitials } from "@/lib/utils";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

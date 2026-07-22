@@ -14,6 +14,8 @@ export interface Wallet {
   phone_number: string;
   owner_name: string;
   balance: string;
+  balance_live: string;
+  balance_test: string;
   is_frozen: boolean;
   created_at: string;
 }
@@ -48,12 +50,16 @@ export interface WalletSettings {
   min_payment_amount: string;
   min_payout_amount: string;
   max_payment_amount: string;
+  min_balance_to_withdraw: string;
+  withdrawal_reserve: string;
+  withdrawal_gateway_percent: string;
   suggested_minimum_gross: string;
   updated_at: string;
 }
 
 export interface AdminWalletList {
   total_balance: string;
+  total_test_balance: string;
   wallet_count: number;
   wallets: Wallet[];
 }
@@ -130,6 +136,9 @@ export interface WalletSettingsInput {
   min_payment_amount?: string;
   min_payout_amount?: string;
   max_payment_amount?: string;
+  min_balance_to_withdraw?: string;
+  withdrawal_reserve?: string;
+  withdrawal_gateway_percent?: string;
 }
 
 export function updateWalletSettings(data: WalletSettingsInput) {
@@ -140,8 +149,7 @@ export function updateWalletSettings(data: WalletSettingsInput) {
 }
 
 // ===================================================================
-// APPEND THESE to src/lib/api/wallets.ts
-// (public payment flow — no auth required)
+// Public payment flow (no auth required)
 // ===================================================================
 
 export interface PublicWorker {
@@ -190,4 +198,76 @@ export function initiatePayment(data: InitiatePaymentInput) {
 
 export function getPaymentStatus(publicId: string) {
   return apiFetch<PaymentRecord>(`/api/wallets/pay/${publicId}/`, { auth: false });
+}
+
+export interface WithdrawalInfo {
+  balance: string;
+  is_frozen: boolean;
+  recipient: string;
+  min_balance_to_withdraw: string;
+  withdrawal_reserve: string;
+  min_withdrawal: string;
+  withdrawable_maximum: string;
+  can_withdraw: boolean;
+}
+
+export interface WithdrawalQuote {
+  amount: string;
+  estimated_fee: string;
+  estimated_received: string;
+  reserve_after: string;
+}
+
+export interface PayoutRecord {
+  public_id: string;
+  status: PaymentStatus; // reuses PENDING|PROCESSING|SUCCEEDED|FAILED
+  is_test: boolean;
+  amount: string;
+  estimated_fee: string;
+  estimated_received: string;
+  actual_received: string | null;
+  recipient_msisdn: string;
+  gateway_status_message: string;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export function getWithdrawalInfo() {
+  return apiFetch<WithdrawalInfo>("/api/wallets/withdraw/info/");
+}
+
+export function quoteWithdrawal(amount: string) {
+  return apiFetch<WithdrawalQuote>("/api/wallets/withdraw/quote/", {
+    method: "POST",
+    body: { amount },
+  });
+}
+
+export function requestWithdrawal(amount: string) {
+  return apiFetch<PayoutRecord>("/api/wallets/withdraw/", {
+    method: "POST",
+    body: { amount },
+  });
+}
+
+export function getPayoutStatus(publicId: string) {
+  return apiFetch<PayoutRecord>(`/api/wallets/withdraw/${publicId}/`);
+}
+
+// ===================================================================
+// Reconciliation (super admin) — Yo float vs live liability
+// ===================================================================
+
+export interface Reconciliation {
+  total_liability: string;
+  float_balance: string | null;
+  difference: string | null;
+  covers_liability: boolean | null;
+  is_live_gateway: boolean;
+  gateway_error: string | null;
+  currencies: Record<string, string>;
+}
+
+export function getReconciliation() {
+  return apiFetch<Reconciliation>("/api/wallets/reconciliation/");
 }

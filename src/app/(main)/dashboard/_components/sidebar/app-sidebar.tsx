@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -78,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const collapsible = isSynced ? sidebarCollapsible : props.collapsible;
 
   const user = useAuthUser();
-  const visibleItems = useMemo(() => filterSidebarItems(sidebarItems, user), [user]);
+  const _visibleItems = useMemo(() => filterSidebarItems(sidebarItems, user), [user]);
 
   return (
     <Sidebar {...props} variant={variant} collapsible={collapsible}>

@@ -47,6 +47,9 @@ export function WalletSettingsView() {
         min_payment_amount: s.min_payment_amount,
         min_payout_amount: s.min_payout_amount,
         max_payment_amount: s.max_payment_amount,
+        min_balance_to_withdraw: s.min_balance_to_withdraw,
+        withdrawal_reserve: s.withdrawal_reserve,
+        withdrawal_gateway_percent: s.withdrawal_gateway_percent,
       });
     } catch (error) {
       toast.error(error instanceof ApiError ? error.message : "Failed to load settings.");
@@ -218,6 +221,53 @@ export function WalletSettingsView() {
                     />
                     {errors.max_payment_amount && (
                       <FieldError errors={errors.max_payment_amount.map((m) => ({ message: m }))} />
+                    )}
+                  </Field>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h3 className="mb-3 font-medium text-sm">Withdrawal rules (worker cash-out)</h3>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Field data-invalid={!!errors.min_balance_to_withdraw}>
+                    <FieldLabel htmlFor="s-minbal">Min balance to withdraw</FieldLabel>
+                    <Input
+                      id="s-minbal"
+                      value={form.min_balance_to_withdraw ?? ""}
+                      onChange={(e) => setField("min_balance_to_withdraw", e.target.value)}
+                      inputMode="decimal"
+                    />
+                    <FieldDescription>Needed before any cash-out.</FieldDescription>
+                    {errors.min_balance_to_withdraw && (
+                      <FieldError errors={errors.min_balance_to_withdraw.map((m) => ({ message: m }))} />
+                    )}
+                  </Field>
+                  <Field data-invalid={!!errors.withdrawal_reserve}>
+                    <FieldLabel htmlFor="s-reserve">Reserve to keep</FieldLabel>
+                    <Input
+                      id="s-reserve"
+                      value={form.withdrawal_reserve ?? ""}
+                      onChange={(e) => setField("withdrawal_reserve", e.target.value)}
+                      inputMode="decimal"
+                    />
+                    <FieldDescription>Must remain after withdrawing.</FieldDescription>
+                    {errors.withdrawal_reserve && (
+                      <FieldError errors={errors.withdrawal_reserve.map((m) => ({ message: m }))} />
+                    )}
+                  </Field>
+                  <Field data-invalid={!!errors.withdrawal_gateway_percent}>
+                    <FieldLabel htmlFor="s-wdpct">Withdrawal fee (%)</FieldLabel>
+                    <Input
+                      id="s-wdpct"
+                      value={form.withdrawal_gateway_percent ?? ""}
+                      onChange={(e) => setField("withdrawal_gateway_percent", e.target.value)}
+                      inputMode="decimal"
+                    />
+                    <FieldDescription>Estimate only; shown to the worker.</FieldDescription>
+                    {errors.withdrawal_gateway_percent && (
+                      <FieldError errors={errors.withdrawal_gateway_percent.map((m) => ({ message: m }))} />
                     )}
                   </Field>
                 </div>

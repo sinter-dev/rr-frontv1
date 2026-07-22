@@ -43,7 +43,7 @@ export function AdminWalletsView() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-primary/40">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -52,7 +52,24 @@ export function AdminWalletsView() {
             </div>
             <p className="mt-2 font-semibold text-3xl tabular-nums">{data ? formatUGX(data.total_balance) : "—"}</p>
             <p className="mt-1 text-muted-foreground text-xs">
-              What the platform owes. Your gateway float should cover at least this.
+              Real money owed. Your gateway float should cover at least this.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+              Test balance
+              <Badge variant="outline" className="text-[10px]">
+                Test
+              </Badge>
+            </div>
+            <p className="mt-2 font-semibold text-3xl tabular-nums">
+              {data ? formatUGX(data.total_test_balance) : "—"}
+            </p>
+            <p className="mt-1 text-muted-foreground text-xs">
+              Not real money. From testing; excluded from what you owe.
             </p>
           </CardContent>
         </Card>
@@ -98,6 +115,7 @@ export function AdminWalletsView() {
                   <TableHead>Phone</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Balance</TableHead>
+                  <TableHead className="text-right">Test</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -113,7 +131,10 @@ export function AdminWalletsView() {
                         <Badge variant="secondary">Active</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">{formatUGX(w.balance)}</TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">{formatUGX(w.balance_live)}</TableCell>
+                    <TableCell className="text-right text-muted-foreground tabular-nums">
+                      {Number.parseFloat(w.balance_test) > 0 ? formatUGX(w.balance_test) : "—"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={() => setAdjusting(w)}>
                         <Wrench className="size-4" />

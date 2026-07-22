@@ -1,27 +1,23 @@
 // src/navigation/sidebar/sidebar-items.ts
-// REPLACES the template's demo navigation (dashboards, mail, chat, auth
-// screens...) with this project's navigation, filtered by what the
-// logged-in user is allowed to do.
+// Project navigation, filtered by what the logged-in user is allowed to
+// see. This is the AUTHORITATIVE list — the sidebar renders only the
+// filtered result (see filterSidebarItems + app-sidebar.tsx).
 //
 // access rules:
 //   "all"          -> every authenticated user
 //   "super_admin"  -> role.code === "super_admin"
 //   "leader"       -> is_group_leader === true
-//
-// Items point to /dashboard/coming-soon until their screens are built —
-// we swap URLs as we implement each milestone.
 
 import {
-  Globe,
   LayoutDashboard,
   type LucideIcon,
-  MapIcon,
-  MapPin,
+  Scale,
   Settings,
   ShieldCheck,
   UserPlus,
   Users,
   Wallet,
+  WalletCards,
 } from "lucide-react";
 
 import type { AuthUser } from "@/lib/auth/auth-api";
@@ -80,7 +76,7 @@ export const sidebarItems: NavGroup[] = [
         access: "all",
       },
       {
-        id: "wallet",
+        id: "my-wallet",
         title: "My Wallet",
         url: "/dashboard/my-wallet",
         icon: Wallet,
@@ -90,21 +86,14 @@ export const sidebarItems: NavGroup[] = [
   },
   {
     id: 2,
-    label: "Money",
+    label: "My Group",
     items: [
       {
-        id: "wallets",
-        title: "All Wallets",
-        url: "/dashboard/wallets",
-        icon: Wallet,
-        access: "super_admin",
-      },
-      {
-        id: "wallet-settings",
-        title: "Wallet Settings",
-        url: "/dashboard/wallets/settings",
-        icon: Settings,
-        access: "super_admin",
+        id: "my-group",
+        title: "My Group",
+        url: "/dashboard/my-group",
+        icon: Users,
+        access: "leader",
       },
     ],
   },
@@ -113,10 +102,17 @@ export const sidebarItems: NavGroup[] = [
     label: "Administration",
     items: [
       {
+        id: "group-leaders",
+        title: "Group Leaders",
+        url: "/dashboard/leaders",
+        icon: UserPlus,
+        access: "super_admin",
+      },
+      {
         id: "groups",
         title: "Groups",
         url: "/dashboard/groups",
-        icon: UserPlus,
+        icon: Users,
         access: "super_admin",
       },
       {
@@ -130,48 +126,31 @@ export const sidebarItems: NavGroup[] = [
   },
   {
     id: 4,
-    label: "My Group",
+    label: "Money",
     items: [
       {
-        id: "members",
-        title: "Members",
-        url: "/dashboard/my-group",
-        icon: Users,
-        access: "leader",
-      },
-    ],
-  },
-  // /// geography start
-
-  {
-    id: 5,
-    label: "Geography",
-    items: [
-      {
-        id: "countries",
-        title: "Countries",
-        url: "/dashboard/geography/countries",
-        icon: Globe,
+        id: "wallets",
+        title: "All Wallets",
+        url: "/dashboard/wallets",
+        icon: WalletCards,
         access: "super_admin",
       },
       {
-        id: "parks",
-        title: "Parks",
-        url: "/dashboard/geography/parks",
-        icon: MapIcon,
+        id: "wallet-settings",
+        title: "Wallet Settings",
+        url: "/dashboard/wallets/settings",
+        icon: Settings,
         access: "super_admin",
       },
       {
-        id: "communities",
-        title: "Communities",
-        url: "/dashboard/geography/communities",
-        icon: MapPin,
+        id: "reconciliation",
+        title: "Reconciliation",
+        url: "/dashboard/wallets/reconciliation",
+        icon: Scale,
         access: "super_admin",
       },
     ],
   },
-
-  // //// geography end
 ];
 
 // ---- Filtering ----
