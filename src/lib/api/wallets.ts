@@ -138,3 +138,56 @@ export function updateWalletSettings(data: WalletSettingsInput) {
     body: data,
   });
 }
+
+// ===================================================================
+// APPEND THESE to src/lib/api/wallets.ts
+// (public payment flow — no auth required)
+// ===================================================================
+
+export interface PublicWorker {
+  id: number;
+  name: string;
+  phone_number: string;
+  role: string | null;
+}
+
+export type PaymentStatus = "PENDING" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "CANCELLED";
+
+export interface PaymentRecord {
+  public_id: string;
+  status: PaymentStatus;
+  is_test: boolean;
+  gross_amount: string;
+  estimated_net: string;
+  net_credited: string | null;
+  beneficiary_name: string;
+  payer_msisdn: string;
+  gateway_status_message: string;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export function searchWorkers(q: string) {
+  return apiFetch<PublicWorker[]>(`/api/wallets/pay/workers/?q=${encodeURIComponent(q)}`, {
+    auth: false,
+  });
+}
+
+export interface InitiatePaymentInput {
+  beneficiary_id: number;
+  amount: string;
+  payer_msisdn: string;
+  payer_name?: string;
+}
+
+export function initiatePayment(data: InitiatePaymentInput) {
+  return apiFetch<PaymentRecord>("/api/wallets/pay/", {
+    method: "POST",
+    body: data,
+    auth: false,
+  });
+}
+
+export function getPaymentStatus(publicId: string) {
+  return apiFetch<PaymentRecord>(`/api/wallets/pay/${publicId}/`, { auth: false });
+}
