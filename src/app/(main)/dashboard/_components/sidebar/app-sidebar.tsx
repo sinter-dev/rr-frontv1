@@ -77,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const collapsible = isSynced ? sidebarCollapsible : props.collapsible;
 
   const user = useAuthUser();
-  const _visibleItems = useMemo(() => filterSidebarItems(sidebarItems, user), [user]);
+  const visibleItems = useMemo(() => filterSidebarItems(sidebarItems, user), [user]);
 
   return (
     <Sidebar {...props} variant={variant} collapsible={collapsible}>
@@ -95,7 +95,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={sidebarItems} />
+        <NavMain items={visibleItems} />
+        {/*<NavMain items={sidebarItems} />*/}
         {/* <NavDocuments items={data.documents} /> */}
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>

@@ -1,7 +1,7 @@
 // src/navigation/sidebar/sidebar-items.ts
-// Project navigation, filtered by what the logged-in user is allowed to
-// see. This is the AUTHORITATIVE list — the sidebar renders only the
-// filtered result (see filterSidebarItems + app-sidebar.tsx).
+// This project's navigation, filtered by what the logged-in user is
+// allowed to do. The sidebar renders ONLY the filtered result
+// (filterSidebarItems + app-sidebar.tsx).
 //
 // access rules:
 //   "all"          -> every authenticated user
@@ -9,8 +9,11 @@
 //   "leader"       -> is_group_leader === true
 
 import {
+  Globe,
   LayoutDashboard,
   type LucideIcon,
+  MapIcon,
+  MapPin,
   Scale,
   Settings,
   ShieldCheck,
@@ -76,7 +79,7 @@ export const sidebarItems: NavGroup[] = [
         access: "all",
       },
       {
-        id: "my-wallet",
+        id: "wallet",
         title: "My Wallet",
         url: "/dashboard/my-wallet",
         icon: Wallet,
@@ -86,33 +89,13 @@ export const sidebarItems: NavGroup[] = [
   },
   {
     id: 2,
-    label: "My Group",
-    items: [
-      {
-        id: "my-group",
-        title: "My Group",
-        url: "/dashboard/my-group",
-        icon: Users,
-        access: "leader",
-      },
-    ],
-  },
-  {
-    id: 3,
     label: "Administration",
     items: [
-      {
-        id: "group-leaders",
-        title: "Group Leaders",
-        url: "/dashboard/leaders",
-        icon: UserPlus,
-        access: "super_admin",
-      },
       {
         id: "groups",
         title: "Groups",
         url: "/dashboard/groups",
-        icon: Users,
+        icon: UserPlus,
         access: "super_admin",
       },
       {
@@ -125,7 +108,51 @@ export const sidebarItems: NavGroup[] = [
     ],
   },
   {
+    id: 3,
+    label: "My Group",
+    items: [
+      {
+        id: "members",
+        title: "Members",
+        url: "/dashboard/my-group",
+        icon: Users,
+        access: "leader",
+      },
+    ],
+  },
+  // /// geography start
+
+  {
     id: 4,
+    label: "Geography",
+    items: [
+      {
+        id: "countries",
+        title: "Countries",
+        url: "/dashboard/geography/countries",
+        icon: Globe,
+        access: "super_admin",
+      },
+      {
+        id: "parks",
+        title: "Parks",
+        url: "/dashboard/geography/parks",
+        icon: MapIcon,
+        access: "super_admin",
+      },
+      {
+        id: "communities",
+        title: "Communities",
+        url: "/dashboard/geography/communities",
+        icon: MapPin,
+        access: "super_admin",
+      },
+    ],
+  },
+
+  // //// geography end
+  {
+    id: 5,
     label: "Money",
     items: [
       {
