@@ -45,6 +45,8 @@ interface NavItemProps {
   readonly isSubmenuOpen: (item: NavMainParentItem) => boolean;
 }
 
+// nav main cleaned well
+
 interface NavLinkItemProps {
   readonly item: NavMainLinkItem;
   readonly isActive: boolean;
