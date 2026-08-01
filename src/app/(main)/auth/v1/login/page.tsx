@@ -17,14 +17,14 @@ export default function LoginV1() {
       <div className="flex flex-1 flex-col justify-center bg-primary p-8 lg:p-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8 flex items-center gap-3">
-            <Image
+            {/* <Image
               src="/logo.png"
               alt={`${APP_CONFIG.name} logo`}
-              width={48}
-              height={48}
+              width={64}
+              height={64}
               className="rounded-lg"
               priority
-            />
+            /> */}
             <span className="font-medium text-lg text-primary-foreground">{APP_CONFIG.name}</span>
           </div>
           <PayWorkerPanel />
@@ -38,9 +38,9 @@ export default function LoginV1() {
             <Image
               src="/logo.png"
               alt={`${APP_CONFIG.name} logo`}
-              width={40}
-              height={40}
-              className="mx-auto rounded-lg lg:hidden"
+              width={64}
+              height={64}
+              className="mx-auto rounded-lg"
             />
             <h1 className="font-medium text-xl tracking-tight">Staff sign in</h1>
             <p className="text-muted-foreground text-sm">
