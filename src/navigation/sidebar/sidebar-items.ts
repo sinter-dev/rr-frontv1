@@ -17,6 +17,7 @@ import {
   Scale,
   Settings,
   ShieldCheck,
+  Tag,
   UserPlus,
   Users,
   Wallet,
@@ -174,6 +175,19 @@ export const sidebarItems: NavGroup[] = [
         title: "Reconciliation",
         url: "/dashboard/wallets/reconciliation",
         icon: Scale,
+        access: "super_admin",
+      },
+    ],
+  },
+  {
+    id: 6,
+    label: "Marketplace",
+    items: [
+      {
+        id: "craft-categories",
+        title: "Craft Categories",
+        url: "/dashboard/marketplace/categories",
+        icon: Tag,
         access: "super_admin",
       },
     ],
