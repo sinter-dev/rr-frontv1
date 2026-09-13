@@ -302,7 +302,7 @@ export function PerformanceOverview() {
                 <ChartTooltipContent
                   className="w-50"
                   indicator="line"
-                  labelFormatter={(value) => format(parseISO(value), "d MMMM yyyy")}
+                  labelFormatter={(value) => format(parseISO(value as string), "d MMMM yyyy")}
                 />
               }
             />
