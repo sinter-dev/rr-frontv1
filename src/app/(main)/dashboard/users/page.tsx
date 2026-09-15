@@ -1,6 +1,5 @@
-import { users } from "./_components/data";
-import { Users } from "./_components/users";
+import { AllUsersView } from "./_components/all-users-view";
 
-export default function Page() {
-  return <Users users={users} />;
+export default function AllUsersPage() {
+  return <AllUsersView />;
 }

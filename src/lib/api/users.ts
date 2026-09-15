@@ -84,7 +84,13 @@ export function listGroupMembers(groupId: number) {
 }
 
 export interface AdminRegisterMemberInput extends RegisterMemberInput {
-  group: number;
+  // Exactly one of group / role must be set — matches the backend's
+  // validation. group = add to an existing group (unchanged). role =
+  // create a GROUPLESS user with that role directly (freelancers, or
+  // staff like Super Admin / Junior Admin / Warden / Tour Operator).
+  group?: number;
+  role?: number;
+  community?: number; // optional, only meaningful alongside `role`
 }
 
 export function adminRegisterMember(data: AdminRegisterMemberInput) {
@@ -92,6 +98,27 @@ export function adminRegisterMember(data: AdminRegisterMemberInput) {
     method: "POST",
     body: data,
   });
+}
+
+// ------------------------------------------------- All users (super admin)
+
+export interface ListUsersParams {
+  search?: string;
+  group?: number;
+  community?: number;
+  role?: string; // role CODE, not id — matches the backend filter
+  groupless?: boolean;
+}
+
+export function listAllUsers(params?: ListUsersParams) {
+  const q = new URLSearchParams();
+  if (params?.search) q.set("search", params.search);
+  if (params?.group) q.set("group", String(params.group));
+  if (params?.community) q.set("community", String(params.community));
+  if (params?.role) q.set("role", params.role);
+  if (params?.groupless) q.set("groupless", "true");
+  const qs = q.toString();
+  return apiFetch<AppUser[]>(`/api/users/${qs ? `?${qs}` : ""}`);
 }
 
 // ------------------------------------------------- Leadership

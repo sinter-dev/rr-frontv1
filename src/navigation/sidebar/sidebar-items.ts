@@ -93,6 +93,13 @@ export const sidebarItems: NavGroup[] = [
     label: "Administration",
     items: [
       {
+        id: "users",
+        title: "Users",
+        url: "/dashboard/users",
+        icon: Users,
+        access: "super_admin",
+      },
+      {
         id: "groups",
         title: "Groups",
         url: "/dashboard/groups",
