@@ -144,13 +144,19 @@ export function DashboardHome() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Members" value={c.members} icon={Users} highlight />
-          <StatCard label="Group leaders" value={c.leaders} icon={Crown} />
-          <StatCard label="Groups" value={c.groups} icon={UsersRound} />
-          <StatCard label="Pending password" value={c.pending_password} icon={KeyRound} hint="Not yet set their own" />
-          <StatCard label="Communities" value={c.communities} icon={Building2} />
-          <StatCard label="National parks" value={c.parks} icon={MapPin} />
-          <StatCard label="Countries" value={c.countries} icon={Globe} />
-          <StatCard label="Roles" value={c.roles} icon={ShieldCheck} />
+          <StatCard label="Group leaders" value={c.leaders} icon={Crown} tone="amber" />
+          <StatCard label="Groups" value={c.groups} icon={UsersRound} tone="blue" />
+          <StatCard
+            label="Pending password"
+            value={c.pending_password}
+            icon={KeyRound}
+            hint="Not yet set their own"
+            tone="rose"
+          />
+          <StatCard label="Communities" value={c.communities} icon={Building2} tone="teal" />
+          <StatCard label="National parks" value={c.parks} icon={MapPin} tone="green" />
+          <StatCard label="Countries" value={c.countries} icon={Globe} tone="violet" />
+          <StatCard label="Roles" value={c.roles} icon={ShieldCheck} tone="blue" />
         </div>
 
         <Card>
@@ -201,6 +207,7 @@ export function DashboardHome() {
             value={stats.counts.pending_password}
             icon={KeyRound}
             hint="Still on a temporary password"
+            tone="rose"
           />
           <Card>
             <CardContent className="flex h-full flex-col justify-center gap-2 pt-6">
@@ -231,8 +238,8 @@ export function DashboardHome() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <StatCard label="Your group" value={stats.group.name} icon={UsersRound} highlight />
-          <StatCard label="Your role" value={stats.group.role} icon={ShieldCheck} />
-          <StatCard label="Members in group" value={stats.counts.members} icon={Users} />
+          <StatCard label="Your role" value={stats.group.role} icon={ShieldCheck} tone="blue" />
+          <StatCard label="Members in group" value={stats.counts.members} icon={Users} tone="amber" />
         </div>
 
         <Card>

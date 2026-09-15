@@ -121,6 +121,26 @@ export function listAllUsers(params?: ListUsersParams) {
   return apiFetch<AppUser[]>(`/api/users/${qs ? `?${qs}` : ""}`);
 }
 
+// ------------------------------------------------- Promote / demote
+
+export function promoteToSuperAdmin(userId: number) {
+  return apiFetch<RegisterResponse>(`/api/users/${userId}/promote-to-super-admin/`, {
+    method: "POST",
+  });
+}
+
+export interface DemoteSuperAdminInput {
+  role: number;
+  community?: number;
+}
+
+export function demoteSuperAdmin(userId: number, data: DemoteSuperAdminInput) {
+  return apiFetch<RegisterResponse>(`/api/users/${userId}/demote-super-admin/`, {
+    method: "POST",
+    body: data,
+  });
+}
+
 // ------------------------------------------------- Leadership
 
 export function setGroupLeader(groupId: number, memberId: number) {
